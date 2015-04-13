@@ -12,7 +12,9 @@ import Data.Char (isSpace)
 -- Supported binary operations: +-/*
 -- Supported unary operations: +-
 -- All operators are right associative.
--- Operator precedence: Unary Operators > Multiplication, Division > Addition, Subtraction
+-- Operator precedence: Unary Operators > 
+--                      Multiplication, Division > 
+--                      Addition, Subtraction
 -- Output is modulo 10^9 + 7
 
 --------------------------------------------------------------------------------
