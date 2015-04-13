@@ -5,18 +5,15 @@ url: "http://example.com" # the base hostname & protocol for your site
 # THEME-SPECIFIC CONFIGURATION
 theme:
   # Meta
-  title: Type Theme
+  title: Garrison Jensen
   avatar: avatar.png
   gravatar: # Email MD5 hash
   description: "A website with blog posts and pages" # used by search engines
   
   # Header and footer text
-  header_text: >
-     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+  header_text:
      
-     <p>Remove all header text in <code>_config.yml</code> to disable this feature.</p>
-  footer_text: >
-   Powered by <a href="http://jekyllrb.com">Jekyll</a> with <a href="https://rohanchandra.github.io/project/type/">Type Theme</a>
+  footer_text: 
   
   # Icons
   rss: false
@@ -26,7 +23,7 @@ theme:
   dribbble: 
   facebook: 
   flickr: 
-  github: "rohanchandra/type-theme"
+  github: "GarrisonJ"
   google_plus: 
   instagram: 
   linkedin:  # Full URL
@@ -36,7 +33,7 @@ theme:
   stack_exchange:  # Full URL
   steam: 
   tumblr: 
-  twitter: "twitter"
+  twitter: "GarrisonLJ"
   wordpress: 
   youtube: 
   
@@ -66,3 +63,5 @@ highlighter: pygments
 sass:
   sass_dir: _sass
   style: :compressed
+
+excerpt_separator: ""   # Workaround for http://blog.slaks.net/2013-08-09/jekyll-tag-was-never-closed
