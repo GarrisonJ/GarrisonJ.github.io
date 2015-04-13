@@ -222,10 +222,11 @@ evalf (Fac2 Neg f)    = - (evalf f)
 evalf (Fac2 NotNeg f) = evalf f
 evalf (Fac3 e)        = evale e
 
-powm                         :: Integer -> Integer -> Integer -> Integer -> Integer
-powm _ 0 _ r                  = r
-powm b e m r | e `mod` 2 == 1 = powm (b * b `mod` m) (e `div` 2) m (r * b `mod` m)
-powm b e m r                  = powm (b * b `mod` m) (e `div` 2) m r
+powm                  :: Integer -> Integer -> Integer -> Integer -> Integer
+powm _ 0 _ r           = r
+powm b e m r 
+      | e `mod` 2 == 1 = powm (b * b `mod` m) (e `div` 2) m (r * b `mod` m)
+powm b e m r           = powm (b * b `mod` m) (e `div` 2) m r
 
 
 --------------------------------------------------------------------------------
