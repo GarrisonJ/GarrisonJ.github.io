@@ -25,10 +25,6 @@ knapsack size numItems values weights = table!(size,numItems)
 
 ![knapsack](/img/knapsack/knapsac5.jpg)
 
-![knapsack](/img/knapsack/knapsack1.jpg)
-
-![knapsack](/img/knapsack/knapsack2.jpg)
-
 {% highlight ruby %}
 def knapsack(size, numItems, values, weights) 
 
