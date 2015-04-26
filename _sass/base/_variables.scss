@@ -1,5 +1,6 @@
 // Typography
-$font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+$font-family-header: 'Lato', 'Source Sans Pro Light', Helvetica, Arial, sans-serif;
+$font-family-text: 'Droid Serif', serif;
 $font-size: 1em;
 //$font-size: 1.25em;
 
@@ -9,9 +10,9 @@ $padding-small: 5%;
 $padding-x-small: 3%;
 
 // Brand colours
-$brand-color: #fff;
+$brand-color: #f6f6f6;
 $background-color: #f6f6f6;
-$border-color: rgba(0, 0, 0, 0.1); // rgba recommended if using feature images
+$border-color: rgba(0, 0, 0, 0.05); // rgba recommended if using feature images
 
 // Typography colours
 $text-color: #383838;
