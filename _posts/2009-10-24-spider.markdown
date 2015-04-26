@@ -1,0 +1,14 @@
+---
+layout:   post
+title:    Spider
+summary:  Spider
+date:     2009-10-24 23:46:06
+---
+
+<a href="https://www.flickr.com/photos/garrisonjensenphotography/4040056147" title="_______ by Garrison Jensen, on Flickr"><img src="https://farm3.staticflickr.com/2770/4040056147_0417dd37a5_o.jpg" alt="_______"></a>
+
+<a href="https://www.flickr.com/photos/garrisonjensenphotography/4040794276" title="_______ by Garrison Jensen, on Flickr"><img src="https://farm3.staticflickr.com/2428/4040794276_4b5f80e1b1_o.jpg" alt="_______"></a>
+
+<a href="https://www.flickr.com/photos/garrisonjensenphotography/4040793768" title="_______ by Garrison Jensen, on Flickr"><img src="https://farm3.staticflickr.com/2508/4040793768_edfe2c5e4a_o.jpg" alt="_______"></a>
+
+<a href="https://www.flickr.com/photos/garrisonjensenphotography/4040025683" title="_______ by Garrison Jensen, on Flickr"><img src="https://farm3.staticflickr.com/2620/4040025683_e23d07ebd1_o.jpg" alt="_______"></a>

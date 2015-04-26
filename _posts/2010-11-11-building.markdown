@@ -1,0 +1,14 @@
+---
+layout:   post
+title:    Building
+summary:  Building
+date:     2010-11-11 23:46:06
+---
+
+<a href="https://www.flickr.com/photos/garrisonjensenphotography/5227614834" title="Untitled by Garrison Jensen, on Flickr"><img src="https://farm6.staticflickr.com/5286/5227614834_c3758d7286_o.jpg" alt="Untitled"></a>
+
+<a href="https://www.flickr.com/photos/garrisonjensenphotography/5203436310" title="Untitled by Garrison Jensen, on Flickr"><img src="https://farm5.staticflickr.com/4110/5203436310_46e640c1a3_o.jpg" alt="Untitled"></a>
+
+<a href="https://www.flickr.com/photos/garrisonjensenphotography/5203436080" title="Untitled by Garrison Jensen, on Flickr"><img src="https://farm6.staticflickr.com/5050/5203436080_0eea834044_o.jpg" alt="Untitled"></a>
+
+<a href="https://www.flickr.com/photos/garrisonjensenphotography/5202831569" title="Untitled by Garrison Jensen, on Flickr"><img src="https://farm5.staticflickr.com/4110/5202831569_e7f469d1e7_o.jpg" alt="Untitled"></a>
