@@ -1,7 +1,23 @@
 <script src="{{ "/js/main.js" | prepend: site.baseurl }}"></script>
 
-{% if site.theme.footer_text %}
+{% if true %}
 <footer class="site-footer">
-	<p class="text">{{ site.theme.footer_text }}</p>
+    <ul style="list-style-type: none; display: inline-block;">
+      <p class="text">{{ site.theme.footer_text }}</p>
+        {% for page in site.pages %}
+          {% if page.title and page.hide != true %}
+          <li><a href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a></li>
+          {% endif %}
+        {% endfor %}
+
+        <!-- Social icons from Font Awesome, if enabled -->
+        {% include icons.html %}
+    </ul>
 </footer>
+
+
+
+
+
+
 {% endif %}
