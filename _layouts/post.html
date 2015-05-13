@@ -5,6 +5,9 @@ layout: default
 
   <header style="background-image: url('{{ site.baseurl }}/{{ page.feature-img }}')">
     <h1 class="title">{{ page.title }}</h1>
+    {% if page.subtitle != "" %}
+      <h5 class="subtitle">{{ page.subtitle }}</h5>
+    {% endif %}
     
     <p class="meta">
     {{ page.date | date: "%B %-d, %Y" }}
