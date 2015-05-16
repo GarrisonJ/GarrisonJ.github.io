@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Keep the education ball rolling
-subtitle: Or, how to stick to a goal for a long time
+date:  2015-05-15 23:46:06
 ---
 
 I haven't gone to my graduation ceremony yet, and I already miss school. I love taking classes.
