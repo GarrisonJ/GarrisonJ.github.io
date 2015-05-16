@@ -18,7 +18,7 @@ Ever since I started with Haskell, I've been interested in learning more about t
 
 ![types and programming langu](/img/type-theory/typesandprobook.jpg)
 
-The textbook I'm going to read is ___Types and Programming Languages___ by Benjamin C. Pierce. It provides a syllabus for a 26 lecture course. I want to finish in ~3 months, so I need to complete 2 a week.
+The textbook I'm going to read is [_Types and Programming Languages_](http://amzn.to/1Ec868Z) by Benjamin C. Pierce. It provides a syllabus for a 26 lecture course. I want to finish in ~3 months, so I need to complete 2 a week.
 
 ![course plan](/img/type-theory/courseplan.jpg)
 
@@ -30,12 +30,11 @@ I'm going to try to skip as many chapters/lessons as possible to speed things up
 
 I have other, more important, projects to work on. After working all day, I have to find motivation to work on this. This is easy when you have an exam approaching (and your obsessed with your GPA). This is more difficult when you are on your own.
 
-I'm going to try some motivational techniques I learned from [Nick Winter](http://www.amazon.com/gp/product/0989279820/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0989279820&linkCode=as2&tag=garrisonjense-20&linkId=GIE4ZSYFGRLP2EHV"). 
-
+I'm going to try some motivational techniques I learned from [_The Procrastination Equation_](http://amzn.to/1FnRiD7) and [_The Motivation Hacker_](http://amzn.to/1FnRq5A). 
 
 1. I'm making myself accountable by sharing my goal (this post).
 2. I'm creating a [beeminder](https://www.beeminder.com) goal. If I fall behind, I lose money.
-3. I'm going to reward myself by buying a (materialistic, unnecessary object [TBD](http://www.coteetciel.com/en-US/bags/backpacks/isar-rucksack-grey-melange)) if I complete my goal.
+3. I'm going to reward myself by buying a (materialistic, unnecessary object TBD) if I complete my goal.
 
 ## What I haven't figured out
 
