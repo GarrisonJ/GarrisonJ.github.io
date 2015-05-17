@@ -133,9 +133,9 @@ member (T _ left e right) x | x == e = True
 member Empty _                       = False
 
 insert :: Ord a => a -> Tree a -> Tree a
-insert x s = T B a y b
+insert x s = let T _ a y b = ins s
+             in  T B a y b
         where
-          T _ a y b = ins s
           ins s'@(T color a' y' b')
                     | x < y'    = build color (ins a') y' b'
                     | x > y'    = build color a' y' (ins b')
