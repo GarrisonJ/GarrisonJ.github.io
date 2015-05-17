@@ -15,7 +15,7 @@ Red-Black trees are notorious for being nightmares of pointer manipulation. Inst
 
 If you're proficient in a functional language, you owe it to yourself to implement a Red-Black tree. You'll be one of the few people that can code a Red-Black tree on a whiteboard.
 
-I'll make you realize why people are so excited about the whole _functional programming_ thing.
+It will make you realize why people are so excited about the whole _functional programming_ thing.
 
 - - -
 
