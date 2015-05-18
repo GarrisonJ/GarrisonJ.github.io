@@ -6,7 +6,7 @@ summary:  Generating primes in Haskell
 date:     2015-05-13 23:46:06
 ---
 
-(Edit: People seem upset with the title. I don't really think anybody is lying. I am just poking fun, don't take this post seriously. n_n)
+(Edit: People seem upset with the title. I don't really think anybody is lying. I am just poking fun, don't take this post seriously. I <span style="color:red;"> &#9829; love</span> <span style="color:#5095c8">Haskell</span> n_n)
 
 On the front page of [Haskell.org][7], you will see this implementation of the sieve of Eratosthenes:
 
