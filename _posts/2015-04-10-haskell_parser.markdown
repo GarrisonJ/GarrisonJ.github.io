@@ -1,7 +1,8 @@
 ---
-layout: post
-title:  "Simple Parser"
-date:   2015-03-03 23:46:06
+layout:   post
+title:    Simple Parser
+summary:  A simple interpreter written in Haskell.
+date:     2015-03-03 23:46:06
 categories: syntax, languages, programming
 ---
 
