@@ -102,7 +102,7 @@ build color left x right          = T color left x right
 
 That's it. You have a Red-Black tree.
 
-If you want to learn more, read [_Purely Functional Data Structures_](http://amzn.to/1Kdg2iD) By Chris Okasaki. I stole most of my implementation from this book. The `build` diagram is also from the book.
+If you want to learn more, read [_Purely Functional Data Structures_](http://amzn.to/1Kdg2iD) by Chris Okasaki. I stole most of my implementation from this book. The `build` diagram is also from the book.
 
 - - -
 
