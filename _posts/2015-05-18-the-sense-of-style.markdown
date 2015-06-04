@@ -2,7 +2,7 @@
 layout:   post
 title:    The Thinking Person's Guide to Writing
 summary:  Review of _The Sense of Style_
-date:     2015-05-15 23:46:06
+date:     2015-06-04 23:46:06
 categories: wrt
 ---
 
