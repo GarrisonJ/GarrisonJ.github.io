@@ -2,8 +2,7 @@
 
 {% if true %}
 <footer class="site-footer">
-    <ul style="list-style-type: none; display: inline-block;">
-      <p class="text">{{ site.theme.footer_text }}</p>
+    <ul>
         {% for page in site.pages %}
           {% if page.title and page.hide != true %}
           <li><a href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a></li>
