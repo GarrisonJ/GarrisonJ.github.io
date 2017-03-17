@@ -1,17 +1,47 @@
 ---
 layout: page
-title: About
-permalink: /about/
+title: Me
+permalink: /me/
 ---
 
-This site is built with [Jekyll](http://jekyllrb.com/). The layout is a modified verison of [Type Theme](http://rohanchandra.github.io/project/type/).
+<style>
+.me-avatar {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 300px;
+    height: 300px;
+    border-radius: 150px;
+    -webkit-border-radius: 150px;
+    -moz-border-radius: 150px;
+    border-color: white;
+    border-style: solid;
+    border-width: 0.5px;
+}
+.me-description {
+    width: 400px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+.me-legal {
+	padding-top: 200px;
+    width: 300px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
 
+<img class="me-avatar" src="https://c1.staticflickr.com/7/6040/6281830826_0fdaccdd8a_b.jpg" alt=""/>
 
-<a style="color:#2290bf" href="https://www.twitter.com/garrisonlj">Twitter</a>  
-<a style="color:#9cdaef" href="https://www.github.com/garrisonj">Github</a>  
-<a style="color:#ff6600" href="https://news.ycombinator.com/submitted?id=garrisonj">Hacker News</a>
+<div class="me-description">
+  Developer at <a style="color:#f37f21" href="http://www.navexglobal.com/en-us">Navex Global</a><br />
+  <a style="color:#2290bf" href="https://www.twitter.com/garrisonlj">Twitter</a>
+  <a style="color:#9cdaef" href="https://www.github.com/garrisonj">Github</a> <br/>
+  n_n
+</div>
 
-
-
-
-n_n
+<div class="me-legal">
+   This site was built with <a href="http://rohanchandra.github.io/project/type/">Type Theme</a>
+</div>
