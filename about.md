@@ -37,6 +37,7 @@ permalink: /me/
 
 <div class="me-description">
   Developer at <a style="color:#f37f21" href="http://www.navexglobal.com/en-us">Navex Global</a><br />
+  Masters student at <a style="color:#6e902a" href="https://www.pdx.edu/cecs/">PSU</a> <br />
   <a style="color:#2290bf" href="https://www.twitter.com/garrisonlj">Twitter</a>
   <a style="color:#9cdaef" href="https://www.github.com/garrisonj">Github</a> <br/>
   n_n
