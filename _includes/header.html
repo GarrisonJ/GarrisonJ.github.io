@@ -1,19 +1,19 @@
 <header class="site-header">
 
-	<div class="branding">
-		{% if site.theme.gravatar %}
-		<a href="{{ site.baseurl }}/">
-			<img class="avatar" src="https://secure.gravatar.com/avatar/{{ site.theme.gravatar }}?s=100" alt=""/>
-		</a>
-		{% elsif site.theme.avatar %}
-		<a href="{{ site.baseurl }}/">
-			<img class="avatar" src="/img/{{ site.theme.avatar }}" alt=""/>
-		</a>
-		{% endif %}
-		<h1 class="site-title">
-			<a href="{{ site.baseurl }}/"><img src="/img/Drawing.png" style="height: 30px;" ></img></a>
-      
-		</h1>
-	</div>
-	
+  <div class="branding">
+    {% if site.theme.gravatar %}
+    <a href="{{ site.baseurl }}/">
+      <img class="avatar" src="https://secure.gravatar.com/avatar/{{ site.theme.gravatar }}?s=100" alt=""/>
+    </a>
+    {% elsif site.theme.avatar %}
+    <a href="{{ site.baseurl }}/">
+      <img class="avatar" src="/img/{{ site.theme.avatar }}" alt=""/>
+    </a>
+    {% endif %}
+    <h1 class="site-title">
+      <a href="{{ site.baseurl }}/"><img src="/img/Drawing.png" style="height: 30px;" ></img></a>
+
+    </h1>
+  </div>
+
 </header>
