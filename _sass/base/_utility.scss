@@ -33,3 +33,37 @@ a.button:hover {
 .disabled {
   opacity: 0.7;
 }
+
+.center-list {
+  width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  word-wrap: initial;
+}
+
+.center-list > ul {
+  list-style: none;
+}
+
+.center-list > ul > li {
+  border-bottom: 1px solid #ddd;
+}
+
+.center-text {
+    width: 400px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.active {
+  text-decoration: underline;
+}
+
+.nav-item {
+  padding-right: 20px;
+}
+
+.author-names {
+  float: right;
+  }

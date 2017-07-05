@@ -7,8 +7,24 @@
     </a>
     {% endif %}
     <h1 class="site-title">
-      <a href="{{ site.baseurl }}/"><img src="/img/Drawing.png" style="height: 30px;" ></img></a>
+      <a href="{{ site.baseurl }}/">Garrison Jensen</a>
     </h1>
   </div>
 
+  <nav class="site-nav">
+   <ul>
+     <li class="nav-item">
+       <a class="page-link" href="{{ site.baseurl }}/">Home</a>
+     </li>
+      {% for item in site.pages %}
+      {% if item.title and item.hide != true %}
+      <li class="nav-item {% if item.url == page.url %}active{% endif %}">
+        <a class="page-link" href="{{ item.url | prepend: site.baseurl }}">
+          {{ item.title }}
+        </a>
+      </li>
+      {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
 </header>

@@ -1,22 +1,4 @@
 <script src="{{ "/js/main.js" | prepend: site.baseurl }}"></script>
 
-{% if true %}
 <footer class="site-footer">
-    <ul>
-        {% for page in site.pages %}
-          {% if page.title and page.hide != true %}
-          <li><a href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a></li>
-          {% endif %}
-        {% endfor %}
-
-        <!-- Social icons from Font Awesome, if enabled -->
-        {% include icons.html %}
-    </ul>
 </footer>
-
-
-
-
-
-
-{% endif %}
