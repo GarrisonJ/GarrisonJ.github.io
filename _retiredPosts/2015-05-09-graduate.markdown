@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Keep the education ball rolling
+title: Continuing Education
 date:  2015-05-15 23:46:06
 ---
 
