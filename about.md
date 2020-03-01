@@ -36,5 +36,5 @@ permalink: /about/
 </div>
 
 <div class="me-legal">
-   This site uses a heavily modified version of <a href="http://rohanchandra.github.io/project/type/">Type Theme</a>. 
+   This site uses a heavily modified version of <a href="https://github.com/rohanchandra/type-theme">Type Theme</a>. 
 </div>
