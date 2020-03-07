@@ -30,11 +30,13 @@ permalink: /about/
 <img class="me-avatar" src="https://c1.staticflickr.com/7/6040/6281830826_0fdaccdd8a_b.jpg" alt=""/>
 
 <div class="center-text">
-  <a style="color:#2290bf" href="https://www.twitter.com/garrisonlj">Twitter</a> <br/>
-  <a style="color:#9cdaef" href="https://www.github.com/garrisonj">Github</a> <br/>
-  n_n
+  <a style="color:#2290bf" target="_blank" href="https://www.twitter.com/garrisonlj">Twitter</a> <br/>
+  <a style="color:#9cdaef" target="_blank" href="https://www.github.com/garrisonj">Github</a> <br/>
+  n_n <br/>
+  I write code and I read.
+
 </div>
 
 <div class="me-legal">
-   This site uses a heavily modified version of <a href="https://github.com/rohanchandra/type-theme">Type Theme</a>. 
+   This site was built with <a href="https://github.com/rohanchandra/type-theme">Type Theme</a>
 </div>
