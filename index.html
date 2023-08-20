@@ -1,48 +1,28 @@
 ---
-layout: default
+title: Welcome
 ---
+<section>
+<p>
 
-<div class="home">
+    <span class="marginnote">
+	    <img alt="A photo of me" src="/images/me.jpeg">
+	    Me, exploring Utah
+    </span>
+    I'm Garrison from Portland, Oregon. I created <a href="https://daily.computer/user/garrison">Daily.computer</a>, a social platform where users post once a day. Beyond that, I'm a software engineer with a penchant for Python and Haskell and have a keen interest in politics. 
+    
+</p>
+<p>
+    Curious about what I'm reading? Check out my <a class="link-emphasis" href="/readinglist.html">reading list</a>.
+</p>
 
-  {% if site.theme.header_text %}
-  <div class="call-out">{{ site.theme.header_text }}</div>
-  {% endif %}
 
-  <div class="posts">
-    {% for post in paginator.posts %}
-    <div class="post-teaser">
 
-      <header>
-        <p>
-          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-        </p>
-      </header>
 
-      <div class="excerpt">
-        {{ post.excerpt }}
+<p>
+I've reproduced a list of recent posts here for your reading pleasure:
+</p>
 
-      </div>
+<h2>Posts</h2>
+$partial("templates/post-list.html")$
 
-    </div>
-    {% endfor %}
-  </div>
-
-  {% if paginator.total_pages > 1 %}
-  <div class="pagination">
-
-    {% if paginator.previous_page %}
-    <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}" class="button" >
-      <i class="fa fa-chevron-left"></i>
-	  Prev
-    </a>
-    {% endif %}
-
-    {% if paginator.next_page %}
-    <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}" class="button" >
-	  Next
-      <i class="fa fa-chevron-right"></i>
-    </a>
-    {% endif %}
-  </div>
-  {% endif %}
-</div>
+</section>
