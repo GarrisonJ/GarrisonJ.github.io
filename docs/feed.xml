@@ -5,7 +5,7 @@
         <title>Garrison's Blog</title>
         <link>https://garrisonjensen.com</link>
         <description><![CDATA[A blog about programming, reading, and other things.]]></description>
-        <atom:link href="https://garrisonjensen.com/rss.xml" rel="self"
+        <atom:link href="https://garrisonjensen.com/feed.xml" rel="self"
                    type="application/rss+xml" />
         <lastBuildDate>Fri, 26 Apr 2024 23:47:06 UT</lastBuildDate>
         <item>
