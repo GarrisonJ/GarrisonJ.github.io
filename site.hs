@@ -54,6 +54,10 @@ main = hakyllWith config $ do
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
             >>= relativizeUrls
 
+    match "CNAME" $ do
+        route idRoute
+        compile copyFileCompiler
+
     match "index.html" $ do
         route idRoute
         compile $ do
