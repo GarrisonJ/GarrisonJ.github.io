@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <channel>
+        <title>Garrison's Blog</title>
+        <link>https://garrisonjensen.com</link>
+        <description><![CDATA[A blog about programming, reading, and other things.]]></description>
+        <atom:link href="https://garrisonjensen.com/rss.xml" rel="self"
+                   type="application/rss+xml" />
+        <lastBuildDate>Fri, 26 Apr 2024 23:47:06 UT</lastBuildDate>
+        <item>
+    <title>Sorted Containers in Ruby inspired by Python</title>
+    <link>https://garrisonjensen.com/posts/2024-04-26-ruby-sorted-containers.html</link>
+    <description><![CDATA[<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title> Garrison Jensen - Sorted Containers in Ruby inspired by Python</title>
+	<link rel="stylesheet" href="../css/tufte.css" />
+	<link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WZEJKPCDSN"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-WZEJKPCDSN');
+    </script>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">garrison</a>
+            </div>
+        </header>
+	    <article>
+		    <h1>Sorted Containers in Ruby inspired by Python</h1>
+		    <p class="subtitle">
+Posted on April 26, 2024
+
+</p>
+<section>
+	<h2 id="quick-links">Quick Links</h2>
+<ul>
+<li>sorted_containers on <a href="https://github.com/GarrisonJ/sorted_containers">Github</a></li>
+<li>sorted_containers on <a href="https://rubygems.org/gems/sorted_containers">RubyGems</a></li>
+<li>sorted_containers <a href="https://www.rubydoc.info/gems/sorted_containers">Documentation</a></li>
+</ul>
+<h2 id="introduction">Introduction</h2>
+<p>I converted Grant Jenks’s Python library <a href="http://www.grantjenks.com/docs/sortedcontainers/">Sorted Containers</a> to Ruby. If you are interested in the details of this data structure, I recommend reading his website. His documentation is much more detailed, and I used it as a reference for this implementation.</p>
+<p>The library provides a fast sorted array, sorted set, and sorted hash implemented in pure Ruby with no dependencies.</p>
+<p>SortedArray, SortedSet, and SortedHash are meant to be drop-in replacements for Array, Set, and Hash but with the extra property that the elements can be accessed in sorted order.</p>
+<p>I compare the performance of SortedContainers to <a href="https://github.com/knu/sorted_set">SortedSet</a> a C extension red-black tree implementation. You can see the benchmarks below. The performance is comparable for add and delete, and much better for iteration, initialization, and lookup.</p>
+<p>Some methods from Array, Set, and Hash have not been implemented in SortedContainers. I want to complete these before version 1.0.0. Feel free to open an issue if you would like a method added or add a pull request if you would like to contribute.</p>
+<p>Feedback is welcome. I hope you find this library useful.</p>
+<h2 id="how-it-works">How it works</h2>
+<p>Modern computers are good at shifting arrays. For that reason, it’s often faster to keep an array sorted than to use the usual tree-based data structures.</p>
+<p>For example, if you have the array <code>[1,2,4,5]</code> and want to insert the element <code>3</code>, you can shift <code>4, 5</code> to the right and insert <code>3</code> in the correct position. This is a <code>O(n)</code> operation, but in practice it’s fast.</p>
+<p>You also save memory by not having to store pointers to children nodes, and you benifit from the cache locality of arrays. When you iterate over a sorted array, you are more likely to access elements that are close together in memory.</p>
+<p>But we can do better if we have a lot of elements. We can break up the array so fewer elements have to be moved when a new element is inserted. For example, if you have the array <code>[[1,2,4],[5,6,7]]</code> and you want to insert the element <code>3</code>, you can insert <code>3</code> into the first array to get <code>[[1,2,3,4],[5,6,7]]</code> and only the element <code>4</code> has to be shifted.</p>
+<p>This often outperforms the more common tree-based data structures like red-black trees with <code>O(log n)</code> insertions, deletions, and lookup. We sacrifice theoretical time complexity for practical performance.</p>
+<p>The size of the subarrays is a trade-off. You can modify how big you want to subarrays by setting the <code>load_factor</code>. The default is set to <code>DEFAULT_LOAD_FACTOR = 1000</code>. The subarray is split when its size is <code>2*load_factor</code>. There is no perfect value. The ideal value will depend on your use case and may require some experimentation.</p>
+<p>SortedSet and SortedHash are implemented using a SortedArray to keep track of the order, and then also use a standard Set and Hash for quick lookups.</p>
+<h2 id="caveats">Caveats</h2>
+<ul>
+<li>Items must be comparable. If you try to insert an element that is not comparable, you will get an error.</li>
+<li>The order of the items must not change after they are inserted, or the container will be corrupted.</li>
+</ul>
+<h2 id="benchmarks">Benchmarks</h2>
+<p><a href="https://github.com/knu/sorted_set">SortedSet</a> is a C extension red-black tree implementation. I used it as a benchmark to compare the performance of SortedContainers.</p>
+<p>Every test was run 5 times and the average was taken.</p>
+<p>You can see that SortedContainers has compariable performance for add and delete, and much better performance for iteration, initialization, and include.</p>
+<p>I did my best to make the tests as fair as possible, but it’s possible that I made a mistake. It’s also difficult to predict real-world performance from these tests. If you have any suggestions for improvement, please let me know by opening an issue. The code for the benchmarks can be found in the github repository.</p>
+<ul>
+<li>MacBook Pro (16-inch, 2019)</li>
+<li>2.6 GHz 6-Core Intel Core i7, 16 GB 2667 MHz DDR4</li>
+<li>Ruby 3.2.2</li>
+<li>SortedContainers 0.1.0</li>
+<li>SortedSet 1.0.3</li>
+</ul>
+<h3 id="results-lower-is-better">Results (Lower is better)</h3>
+<figure>
+<label for="initalize-performance" class="margin-toggle">⊕</label><input type="checkbox" id="initalize-performance" class="margin-toggle"><span class="marginnote">Initialize a Sorted Set with <em>N</em> elements</span>
+<img src="https://github.com/GarrisonJ/sorted_containers/blob/main/benchmark/initialize_performance_comparison.png?raw=true" alt="Graph showing Initialization performance comparison">
+</figure>
+<figure>
+<label for="add-performance" class="margin-toggle">⊕</label><input type="checkbox" id="add-performance" class="margin-toggle"><span class="marginnote">Add <em>N</em> elements to a Sorted Set</span>
+<img src="https://github.com/GarrisonJ/sorted_containers/blob/main/benchmark/add_performance_comparison.png?raw=true" alt="Graph showing Add performance comparison">
+</figure>
+<figure>
+<label for="delete-performance" class="margin-toggle">⊕</label><input type="checkbox" id="delete-performance" class="margin-toggle"><span class="marginnote">Delete <em>N</em> elements from a Sorted Set</span>
+<img src="https://github.com/GarrisonJ/sorted_containers/blob/main/benchmark/delete_performance_comparison.png?raw=true" alt="Graph showing Delete performance comparison">
+</figure>
+<figure>
+<label for="iteration-performance" class="margin-toggle">⊕</label><input type="checkbox" id="iteration-performance" class="margin-toggle"><span class="marginnote">Iterate over a Sorted Set with <em>N</em> elements</span>
+<img src="https://github.com/GarrisonJ/sorted_containers/blob/main/benchmark/iteration_performance_comparison.png?raw=true" alt="Graph showing Iteration performance comparison">
+</figure>
+<figure>
+<label for="include-performance" class="margin-toggle">⊕</label><input type="checkbox" id="include-performance" class="margin-toggle"><span class="marginnote">Check if <em>N</em> elements are included in a Sorted Set</span>
+<img src="https://github.com/GarrisonJ/sorted_containers/blob/main/benchmark/include_performance_comparison.png?raw=true" alt="Graph showing Include performance comparison">
+</figure>
+<h2 id="conclusion">Conclusion</h2>
+<p>Feedback is welcome. Please open an issue on <a href="https://github.com/GarrisonJ/sorted_containers">Github</a> if you have any suggestions or find any bugs.</p>
+<p>If you like Python libraries converted to Ruby, you might also like my conversion of <code>heapq</code> to Ruby called <a href="https://github.com/GarrisonJ/heapify">heapify</a></p>
+</section>
+
+	    </article>
+        <footer>
+        </footer>
+    </body>
+</html>
+]]></description>
+    <pubDate>Fri, 26 Apr 2024 23:47:06 UT</pubDate>
+    <guid>https://garrisonjensen.com/posts/2024-04-26-ruby-sorted-containers.html</guid>
+    <dc:creator>Garrison Jensen</dc:creator>
+</item>
+<item>
+    <title>The easy way to implement a Red-Black tree</title>
+    <link>https://garrisonjensen.com/posts/2015-05-15-easy-red-black-tree.html</link>
+    <description><![CDATA[<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title> Garrison Jensen - The easy way to implement a Red-Black tree</title>
+	<link rel="stylesheet" href="../css/tufte.css" />
+	<link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WZEJKPCDSN"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-WZEJKPCDSN');
+    </script>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">garrison</a>
+            </div>
+        </header>
+	    <article>
+		    <h1>The easy way to implement a Red-Black tree</h1>
+		    <p class="subtitle">
+Posted on May 15, 2015
+
+</p>
+<section>
+	<p><small style="color:gray;">tl;dr: Complete implementation is at the bottom.</small></p>
+<p>Red-Black trees are notorious for being nightmares of pointer manipulation. Instructors will show the theory, but won’t torture their students to implement one. Interviewers will avoid asking about it. They probably couldn’t do it themselves.</p>
+<blockquote>
+<p>You should be vaguely familiar with how you might balance a tree. The details, however, are probably unnecessary for the purposes of an interview.
+<small>– Gayle McDowell, Cracking the coding interview</small></p>
+</blockquote>
+<p>If you’re proficient in a functional language, you owe it to yourself to implement a Red-Black tree. You’ll be one of the few people that can code a Red-Black tree on a whiteboard.</p>
+<p>It will make you realize why people are so excited about the whole <em>functional programming</em> thing.</p>
+<hr />
+<h3 id="what-is-a-red-black-tree">What is a Red-Black Tree?</h3>
+<p><img src="../images/redblacktree/tryredblack.jpg" style="width: 100%"></p>
+<p>A Red-Black tree is a balanced binary search tree. Every node is colored red or black. Three rules hold:</p>
+<ol type="1">
+<li>No red node has a red child.</li>
+<li>Every path from the root to an empty node contains the same number of black nodes.</li>
+<li>An empty node is always black.</li>
+</ol>
+<p>Draw a tree with these rules. Notice it’s always relatively-balanced. Try to draw one as unbalanced as possible. You won’t get far.</p>
+<p>You can prove the maximum depth of a node is at most <span class="math display">2⌊<em>l</em><em>o</em><em>g</em>(<em>n</em>+1)⌋</span></p>
+<hr />
+<h3 id="implementation">Implementation</h3>
+<p>Let’s implement a <span class="math display"><em>s</em><em>e</em><em>t</em></span> with a Red-Black tree. At minimum we’ll need a <code>member</code> function and an <code>insert</code> function.</p>
+<hr />
+<h4 id="data">Data</h4>
+<p>A tree can be empty, or it can be a node with two subtrees, a color, and an element.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Tree</span> a <span class="ot">=</span> <span class="dt">Empty</span> <span class="co">-- Empty does not need a color, it's always black.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>            <span class="op">|</span> <span class="dt">T</span> <span class="dt">Color</span> (<span class="dt">Tree</span> a) a (<span class="dt">Tree</span> a)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Color</span>  <span class="ot">=</span> <span class="dt">R</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            <span class="op">|</span> <span class="dt">B</span></span></code></pre></div>
+<hr />
+<h4 id="member">Member</h4>
+<p>The <code>member</code> function searches for an element. It’s a binary search.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">member ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>member (<span class="dt">T</span> _ left e right) x <span class="op">|</span> x <span class="op">==</span> e <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                            <span class="op">|</span> x <span class="op">&lt;</span> e  <span class="ot">=</span> member left x</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                            <span class="op">|</span> x <span class="op">&gt;</span> e  <span class="ot">=</span> member right x</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>member <span class="dt">Empty</span>              _          <span class="ot">=</span> <span class="dt">False</span></span></code></pre></div>
+<hr />
+<h4 id="insert">Insert</h4>
+<p>The <code>insert</code> function uses the function <code>build</code>, which is a constructor that makes sure the node is balanced.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">insert ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>insert x s <span class="ot">=</span> <span class="kw">let</span> <span class="dt">T</span> _ a y b <span class="ot">=</span> ins s</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>             <span class="kw">in</span>  <span class="dt">T</span> <span class="dt">B</span> a y b</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">where</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>          ins s'<span class="op">@</span>(<span class="dt">T</span> color a' y' b')</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                    <span class="op">|</span> x <span class="op">&lt;</span> y'    <span class="ot">=</span> build color (ins a') y' b'</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                    <span class="op">|</span> x <span class="op">&gt;</span> y'    <span class="ot">=</span> build color a' y' (ins b')</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                    <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> s'</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>          ins <span class="dt">Empty</span>             <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> <span class="dt">Empty</span> x <span class="dt">Empty</span></span></code></pre></div>
+<p>There are four cases when <code>build</code> needs to adjust a node. It detects the case when a black parent has a red child with a red child. It shifts the nodes around to fix it. The solution is the same in every case. (Notice the right hand sides of <code>build</code> are the same).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">build ::</span> <span class="dt">Color</span> <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> (<span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">R</span> a x b) y c) z d <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> (<span class="dt">T</span> <span class="dt">R</span> a x (<span class="dt">T</span> <span class="dt">R</span> b y c)) z d <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> a x (<span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">R</span> b y c) z d) <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> a x (<span class="dt">T</span> <span class="dt">R</span> b y (<span class="dt">T</span> <span class="dt">R</span> c z d)) <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>build color left x right          <span class="ot">=</span> <span class="dt">T</span> color left x right</span></code></pre></div>
+<p><img src="../images/redblacktree/balance.jpg" style="width: 100%"></p>
+<h3 id="afterwards">Afterwards</h3>
+<p>That’s it. You have a Red-Black tree.</p>
+<p>If you want to learn more, read <a href="http://amzn.to/1Kdg2iD"><em>Purely Functional Data Structures</em></a> by Chris Okasaki. I stole most of my implementation from this book. The <code>build</code> diagram is also from the book.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">RedBlackSet</span>( empty</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                  , member</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                  , insert</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                  ) <span class="kw">where</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Tree</span> a <span class="ot">=</span> <span class="dt">Empty</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            <span class="op">|</span> <span class="dt">T</span> <span class="dt">Color</span> (<span class="dt">Tree</span> a) a (<span class="dt">Tree</span> a)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Color</span>  <span class="ot">=</span> <span class="dt">R</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            <span class="op">|</span> <span class="dt">B</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="ot">empty ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> <span class="dt">Tree</span> a</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>empty <span class="ot">=</span> <span class="dt">Empty</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="ot">member ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>member (<span class="dt">T</span> _ left e right) x <span class="op">|</span> x <span class="op">==</span> e <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>                            <span class="op">|</span> x <span class="op">&lt;</span> e  <span class="ot">=</span> member left x</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>                            <span class="op">|</span> x <span class="op">&gt;</span> e  <span class="ot">=</span> member right x</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>member <span class="dt">Empty</span> _                       <span class="ot">=</span> <span class="dt">False</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="ot">insert ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>insert x s <span class="ot">=</span> <span class="kw">let</span> <span class="dt">T</span> _ a y b <span class="ot">=</span> ins s</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>             <span class="kw">in</span>  <span class="dt">T</span> <span class="dt">B</span> a y b</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        <span class="kw">where</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>          ins s'<span class="op">@</span>(<span class="dt">T</span> color a' y' b')</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>                    <span class="op">|</span> x <span class="op">&lt;</span> y'    <span class="ot">=</span> build color (ins a') y' b'</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>                    <span class="op">|</span> x <span class="op">&gt;</span> y'    <span class="ot">=</span> build color a' y' (ins b')</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>                    <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> s'</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>          ins <span class="dt">Empty</span>             <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> <span class="dt">Empty</span> x <span class="dt">Empty</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="ot">build ::</span> <span class="dt">Color</span> <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> (<span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">R</span> a x b) y c) z d <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> (<span class="dt">T</span> <span class="dt">R</span> a x (<span class="dt">T</span> <span class="dt">R</span> b y c)) z d <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> a x (<span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">R</span> b y c) z d) <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> a x (<span class="dt">T</span> <span class="dt">R</span> b y (<span class="dt">T</span> <span class="dt">R</span> c z d)) <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>build color left x right          <span class="ot">=</span> <span class="dt">T</span> color left x right</span></code></pre></div>
+</section>
+
+	    </article>
+        <footer>
+        </footer>
+    </body>
+</html>
+]]></description>
+    <pubDate>Fri, 15 May 2015 23:46:06 UT</pubDate>
+    <guid>https://garrisonjensen.com/posts/2015-05-15-easy-red-black-tree.html</guid>
+    <dc:creator>Garrison Jensen</dc:creator>
+</item>
+<item>
+    <title>A fast way to generate primes in Haskell</title>
+    <link>https://garrisonjensen.com/posts/2015-05-13-generate-primes-in-haskell.html</link>
+    <description><![CDATA[<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title> Garrison Jensen - A fast way to generate primes in Haskell</title>
+	<link rel="stylesheet" href="../css/tufte.css" />
+	<link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WZEJKPCDSN"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-WZEJKPCDSN');
+    </script>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">garrison</a>
+            </div>
+        </header>
+	    <article>
+		    <h1>A fast way to generate primes in Haskell</h1>
+		    <p class="subtitle">
+Posted on May 13, 2015
+
+</p>
+<section>
+	<p>On the front page of <a href="https://www.haskell.org/">Haskell.org</a>, you will see this implementation of the sieve of Eratosthenes:</p>
+<div style="text-align:center;">
+<p><img style="width: 100%;" src="../images/Screen.png"></p>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>primes <span class="ot">=</span> sieve [<span class="dv">2</span><span class="op">..</span>] </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> sieve (p<span class="op">:</span>xs) <span class="ot">=</span> </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>          p <span class="op">:</span> sieve [x <span class="op">|</span> x <span class="ot">&lt;-</span> xs, x <span class="ot">`mod`</span> p <span class="op">/=</span> <span class="dv">0</span>]</span></code></pre></div>
+<p>When you see this for the first time it’s amazing. But it’s <a href="http://www.cs.hmc.edu/~oneill/papers/Sieve-JFP.pdf">not the sieve of Eratosthenes</a>.</p>
+<p>The problem with the algorithm is the way it crosses-off numbers. In the true sieve of Eratosthenes when we find a prime number, <span class="math display"><em>p</em></span>, we start at <span class="math display"><em>p</em><sup>2</sup></span> and from there we cross-off multiples of <span class="math display"><em>p</em></span>. For example, when calculating prime numbers less then 100, when we find 7 we start at 49 and cross-off 56, 63, 70, 77, 84, 91, and 98. That’s 8 operations. When the false algorithm finds 7, it checks every number from 8 to 100, that’s 92 operations!</p>
+<div style="text-align:center">
+<p><img src="../images/Sieve_of_Eratosthenes_animation.gif" alt="real seive animation, courtesy of Wikipedia"></p>
+</div>
+<p><a href="http://www.cs.hmc.edu/~oneill/">Melissa E. O’Neill</a> gives us a real functional, <a href="https://wiki.haskell.org/Lazy_evaluation">lazy</a>, implementation of the algorithm in her paper, <a href="http://www.cs.hmc.edu/~oneill/papers/Sieve-JFP.pdf"><strong><em>The Genuine Sieve of Eratosthenes</em></strong></a>.</p>
+<p>For every number, we check if it’s a multiple of a prime seen so far. We don’t have to check all the primes. We store the primes in a priority queue, indexed on the smallest multiple of it we have seen. We only compare the current number to the smallest index of the queue. If it equals our current number, we know our number must be a composite. We then increment the prime multiple to the next multiple of the prime, and insert it back into the queue. (We also have to adjust the queue because some numbers are inserted more than once. 12 will be in the queue twice because <span class="math display">2<sup>2</sup> + 2 + 2 + 2 + 2 = 12</span> and <span class="math display">3<sup>2</sup> + 3 = 12</span>. Notice 12 is also crossed-off twice in the animation.)</p>
+<p>We store multiples of primes as infinite lists. Laziness is key.</p>
+<p>My interpretation of the algorithm uses <a href="https://downloads.haskell.org/~ghc/7.8.2/docs/html/libraries/containers-0.5.5.1/Data-Set.html">Data.Set</a> as a priority queue, because the functions <code>insert</code> and <code>findMin</code> are <span class="math display"><em>O</em>(<em>l</em><em>o</em><em>g</em>(<em>n</em>))</span>.</p>
+<hr />
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Set</span> <span class="kw">as</span> <span class="dt">PQ</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ot">primes ::</span> [<span class="dt">Integer</span>]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>primes <span class="ot">=</span> <span class="dv">2</span><span class="op">:</span>sieve [<span class="dv">3</span>,<span class="dv">5</span><span class="op">..</span>]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    sieve (x<span class="op">:</span>xs) <span class="ot">=</span> x <span class="op">:</span> sieve' xs (insertprime x xs PQ.empty)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    sieve' (x<span class="op">:</span>xs) table</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> nextComposite <span class="op">==</span> x <span class="ot">=</span> sieve' xs (adjust x table)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> <span class="fu">otherwise</span>          <span class="ot">=</span> x <span class="op">:</span> sieve' xs (insertprime x xs table)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>      <span class="kw">where</span> </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        (nextComposite,_) <span class="ot">=</span> PQ.findMin table</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    adjust x table</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> n <span class="op">==</span> x    <span class="ot">=</span> adjust x (PQ.insert (n', ns) newPQ)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> table</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>      <span class="kw">where</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Just</span> ((n, n'<span class="op">:</span>ns), newPQ) <span class="ot">=</span> PQ.minView table</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    insertprime p xs <span class="ot">=</span> PQ.insert (p<span class="op">*</span>p, <span class="fu">map</span> (<span class="op">*</span>p) xs)</span></code></pre></div>
+<hr />
+<p>The difference in time it takes each algorithm to calculate the 10,000th prime number on my machine is huge:</p>
+<p><strong>False sieve:</strong></p>
+<pre><code>    real  0m7.913s
+    user  0m7.886s
+    sys   0m0.016s</code></pre>
+<p><strong>O’Neill’s algorithm:</strong></p>
+<pre><code>    real  0m0.248s
+    user  0m0.241s
+    sys   0m0.004s</code></pre>
+<p>The false sieve takes almost <strong>8 seconds</strong>! Compare this to the real sieve which takes about <strong>0.24 seconds</strong>.</p>
+<hr />
+<p><a href="http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes">Sieve gif courtesy of Wikipedia.</a></p>
+</section>
+
+	    </article>
+        <footer>
+        </footer>
+    </body>
+</html>
+]]></description>
+    <pubDate>Wed, 13 May 2015 23:46:06 UT</pubDate>
+    <guid>https://garrisonjensen.com/posts/2015-05-13-generate-primes-in-haskell.html</guid>
+    <dc:creator>Garrison Jensen</dc:creator>
+</item>
+
+    </channel>
+</rss>

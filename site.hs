@@ -11,6 +11,15 @@ config = defaultConfiguration
   { destinationDirectory = "docs"
   }
 
+myFeedConfiguration :: FeedConfiguration
+myFeedConfiguration = FeedConfiguration
+    { feedTitle       = "Garrison's Blog"
+    , feedDescription = "A blog about programming, reading, and other things."
+    , feedAuthorName  = "Garrison Jensen"
+    , feedAuthorEmail = "garrison.jensen@gmail.com"
+    , feedRoot        = "https://garrisonjensen.com"
+    }
+
 main :: IO ()
 main = hakyllWith config $ do
     match "images/**" $ do
@@ -33,6 +42,13 @@ main = hakyllWith config $ do
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
+
+    create ["rss.xml"] $ do
+        route idRoute
+        compile $ do
+            let feedCtx = postCtx `mappend` bodyField "description"
+            posts <- fmap (take 10) . recentFirst =<< loadAll "posts/*"
+            renderRss myFeedConfiguration feedCtx posts
 
     create ["archive.html"] $ do
         route idRoute
