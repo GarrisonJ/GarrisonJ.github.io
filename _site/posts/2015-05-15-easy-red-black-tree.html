@@ -1,127 +1,134 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title> Garrison Jensen - The easy way to implement a Red-Black tree</title>
-	<link rel="stylesheet" href="../css/tufte.css" />
-	<link rel="stylesheet" href="../css/default.css" />
-    </head>
-    <body>
-        <header>
-            <div class="logo">
-                <a href="../">garrison</a>
-            </div>
-        </header>
-	    <article>
-		    <h1>The easy way to implement a Red-Black tree</h1>
-		    <p class="subtitle">
-Posted on May 15, 2015
+<p><small style="color:gray;">tl;dr: Complete implementation is at the bottom.</small></p>
 
-</p>
-<section>
-	<p><small style="color:gray;">tl;dr: Complete implementation is at the bottom.</small></p>
 <p>Red-Black trees are notorious for being nightmares of pointer manipulation. Instructors will show the theory, but won’t torture their students to implement one. Interviewers will avoid asking about it. They probably couldn’t do it themselves.</p>
+
 <blockquote>
-<p>You should be vaguely familiar with how you might balance a tree. The details, however, are probably unnecessary for the purposes of an interview.
+  <p>You should be vaguely familiar with how you might balance a tree. The details, however, are probably unnecessary for the purposes of an interview. 
 <small>– Gayle McDowell, Cracking the coding interview</small></p>
 </blockquote>
-<p>If you’re proficient in a functional language, you owe it to yourself to implement a Red-Black tree. You’ll be one of the few people that can code a Red-Black tree on a whiteboard.</p>
-<p>It will make you realize why people are so excited about the whole <em>functional programming</em> thing.</p>
-<hr />
-<h3 id="what-is-a-red-black-tree">What is a Red-Black Tree?</h3>
-<p><img src="../images/redblacktree/tryredblack.jpg" style="width: 100%"></p>
-<p>A Red-Black tree is a balanced binary search tree. Every node is colored red or black. Three rules hold:</p>
-<ol type="1">
-<li>No red node has a red child.</li>
-<li>Every path from the root to an empty node contains the same number of black nodes.</li>
-<li>An empty node is always black.</li>
-</ol>
-<p>Draw a tree with these rules. Notice it’s always relatively-balanced. Try to draw one as unbalanced as possible. You won’t get far.</p>
-<p>You can prove the maximum depth of a node is at most <span class="math display">2⌊<em>l</em><em>o</em><em>g</em>(<em>n</em>+1)⌋</span></p>
-<hr />
-<h3 id="implementation">Implementation</h3>
-<p>Let’s implement a <span class="math display"><em>s</em><em>e</em><em>t</em></span> with a Red-Black tree. At minimum we’ll need a <code>member</code> function and an <code>insert</code> function.</p>
-<hr />
-<h4 id="data">Data</h4>
-<p>A tree can be empty, or it can be a node with two subtrees, a color, and an element.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Tree</span> a <span class="ot">=</span> <span class="dt">Empty</span> <span class="co">-- Empty does not need a color, it's always black.</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>            <span class="op">|</span> <span class="dt">T</span> <span class="dt">Color</span> (<span class="dt">Tree</span> a) a (<span class="dt">Tree</span> a)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Color</span>  <span class="ot">=</span> <span class="dt">R</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            <span class="op">|</span> <span class="dt">B</span></span></code></pre></div>
-<hr />
-<h4 id="member">Member</h4>
-<p>The <code>member</code> function searches for an element. It’s a binary search.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">member ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>member (<span class="dt">T</span> _ left e right) x <span class="op">|</span> x <span class="op">==</span> e <span class="ot">=</span> <span class="dt">True</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                            <span class="op">|</span> x <span class="op">&lt;</span> e  <span class="ot">=</span> member left x</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                            <span class="op">|</span> x <span class="op">&gt;</span> e  <span class="ot">=</span> member right x</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>member <span class="dt">Empty</span>              _          <span class="ot">=</span> <span class="dt">False</span></span></code></pre></div>
-<hr />
-<h4 id="insert">Insert</h4>
-<p>The <code>insert</code> function uses the function <code>build</code>, which is a constructor that makes sure the node is balanced.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">insert ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>insert x s <span class="ot">=</span> <span class="kw">let</span> <span class="dt">T</span> _ a y b <span class="ot">=</span> ins s</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>             <span class="kw">in</span>  <span class="dt">T</span> <span class="dt">B</span> a y b</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">where</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>          ins s'<span class="op">@</span>(<span class="dt">T</span> color a' y' b')</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                    <span class="op">|</span> x <span class="op">&lt;</span> y'    <span class="ot">=</span> build color (ins a') y' b'</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                    <span class="op">|</span> x <span class="op">&gt;</span> y'    <span class="ot">=</span> build color a' y' (ins b')</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                    <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> s'</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>          ins <span class="dt">Empty</span>             <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> <span class="dt">Empty</span> x <span class="dt">Empty</span></span></code></pre></div>
-<p>There are four cases when <code>build</code> needs to adjust a node. It detects the case when a black parent has a red child with a red child. It shifts the nodes around to fix it. The solution is the same in every case. (Notice the right hand sides of <code>build</code> are the same).</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">build ::</span> <span class="dt">Color</span> <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> (<span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">R</span> a x b) y c) z d <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> (<span class="dt">T</span> <span class="dt">R</span> a x (<span class="dt">T</span> <span class="dt">R</span> b y c)) z d <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> a x (<span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">R</span> b y c) z d) <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> a x (<span class="dt">T</span> <span class="dt">R</span> b y (<span class="dt">T</span> <span class="dt">R</span> c z d)) <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>build color left x right          <span class="ot">=</span> <span class="dt">T</span> color left x right</span></code></pre></div>
-<p><img src="../images/redblacktree/balance.jpg" style="width: 100%"></p>
-<h3 id="afterwards">Afterwards</h3>
-<p>That’s it. You have a Red-Black tree.</p>
-<p>If you want to learn more, read <a href="http://amzn.to/1Kdg2iD"><em>Purely Functional Data Structures</em></a> by Chris Okasaki. I stole most of my implementation from this book. The <code>build</code> diagram is also from the book.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">RedBlackSet</span>( empty</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                  , member</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                  , insert</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                  ) <span class="kw">where</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Tree</span> a <span class="ot">=</span> <span class="dt">Empty</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            <span class="op">|</span> <span class="dt">T</span> <span class="dt">Color</span> (<span class="dt">Tree</span> a) a (<span class="dt">Tree</span> a)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Color</span>  <span class="ot">=</span> <span class="dt">R</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            <span class="op">|</span> <span class="dt">B</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="ot">empty ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> <span class="dt">Tree</span> a</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>empty <span class="ot">=</span> <span class="dt">Empty</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="ot">member ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>member (<span class="dt">T</span> _ left e right) x <span class="op">|</span> x <span class="op">==</span> e <span class="ot">=</span> <span class="dt">True</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>                            <span class="op">|</span> x <span class="op">&lt;</span> e  <span class="ot">=</span> member left x</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>                            <span class="op">|</span> x <span class="op">&gt;</span> e  <span class="ot">=</span> member right x</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>member <span class="dt">Empty</span> _                       <span class="ot">=</span> <span class="dt">False</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="ot">insert ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>insert x s <span class="ot">=</span> <span class="kw">let</span> <span class="dt">T</span> _ a y b <span class="ot">=</span> ins s</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>             <span class="kw">in</span>  <span class="dt">T</span> <span class="dt">B</span> a y b</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        <span class="kw">where</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>          ins s'<span class="op">@</span>(<span class="dt">T</span> color a' y' b')</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>                    <span class="op">|</span> x <span class="op">&lt;</span> y'    <span class="ot">=</span> build color (ins a') y' b'</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>                    <span class="op">|</span> x <span class="op">&gt;</span> y'    <span class="ot">=</span> build color a' y' (ins b')</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>                    <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> s'</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>          ins <span class="dt">Empty</span>             <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> <span class="dt">Empty</span> x <span class="dt">Empty</span></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="ot">build ::</span> <span class="dt">Color</span> <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a</span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> (<span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">R</span> a x b) y c) z d <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> (<span class="dt">T</span> <span class="dt">R</span> a x (<span class="dt">T</span> <span class="dt">R</span> b y c)) z d <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> a x (<span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">R</span> b y c) z d) <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>build <span class="dt">B</span> a x (<span class="dt">T</span> <span class="dt">R</span> b y (<span class="dt">T</span> <span class="dt">R</span> c z d)) <span class="ot">=</span> <span class="dt">T</span> <span class="dt">R</span> (<span class="dt">T</span> <span class="dt">B</span> a x b) y (<span class="dt">T</span> <span class="dt">B</span> c z d)</span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>build color left x right          <span class="ot">=</span> <span class="dt">T</span> color left x right</span></code></pre></div>
-</section>
 
-	    </article>
-        <footer>
-        </footer>
-    </body>
-</html>
+<p>If you’re proficient in a functional language, you owe it to yourself to implement a Red-Black tree. You’ll be one of the few people that can code a Red-Black tree on a whiteboard.</p>
+
+<p>It will make you realize why people are so excited about the whole <em>functional programming</em> thing.</p>
+
+<hr />
+
+<h3 id="what-is-a-red-black-tree">What is a Red-Black Tree?</h3>
+
+<p><img src="/images/redblacktree/tryredblack.jpg" style="width: 100%" /></p>
+
+<p>A Red-Black tree is a balanced binary search tree. Every node is colored red or black. Three rules hold:</p>
+
+<ol>
+  <li>No red node has a red child.</li>
+  <li>Every path from the root to an empty node contains the same number of black nodes.</li>
+  <li>An empty node is always black.</li>
+</ol>
+
+<p>Draw a tree with these rules. Notice it’s always relatively-balanced. Try to draw one as unbalanced as possible. You won’t get far.</p>
+
+<p>You can prove the maximum depth of a node is at most \(2\lfloor log(n+1) \rfloor\)</p>
+
+<hr />
+
+<h3 id="implementation">Implementation</h3>
+<p>Let’s implement a \(set\) with a Red-Black tree. At minimum we’ll need a <code class="language-plaintext highlighter-rouge">member</code> function and an <code class="language-plaintext highlighter-rouge">insert</code> function.</p>
+
+<hr />
+
+<h4 id="data">Data</h4>
+
+<p>A tree can be empty, or it can be a node with two subtrees, a color, and an element.</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">data</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="o">=</span> <span class="kt">Empty</span> <span class="c1">-- Empty does not need a color, it's always black.</span>
+            <span class="o">|</span> <span class="kt">T</span> <span class="kt">Color</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="n">a</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span>
+
+<span class="kr">data</span> <span class="kt">Color</span>  <span class="o">=</span> <span class="kt">R</span>
+            <span class="o">|</span> <span class="kt">B</span>
+</code></pre></div></div>
+
+<hr />
+
+<h4 id="member">Member</h4>
+
+<p>The <code class="language-plaintext highlighter-rouge">member</code> function searches for an element. It’s a binary search.</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">member</span> <span class="o">::</span> <span class="kt">Ord</span> <span class="n">a</span> <span class="o">=&gt;</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">Bool</span>
+<span class="n">member</span> <span class="p">(</span><span class="kt">T</span> <span class="kr">_</span> <span class="n">left</span> <span class="n">e</span> <span class="n">right</span><span class="p">)</span> <span class="n">x</span> <span class="o">|</span> <span class="n">x</span> <span class="o">==</span> <span class="n">e</span> <span class="o">=</span> <span class="kt">True</span>
+                            <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">e</span>  <span class="o">=</span> <span class="n">member</span> <span class="n">left</span> <span class="n">x</span>
+                            <span class="o">|</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">e</span>  <span class="o">=</span> <span class="n">member</span> <span class="n">right</span> <span class="n">x</span>
+<span class="n">member</span> <span class="kt">Empty</span>              <span class="kr">_</span>          <span class="o">=</span> <span class="kt">False</span>
+</code></pre></div></div>
+
+<hr />
+
+<h4 id="insert">Insert</h4>
+
+<p>The <code class="language-plaintext highlighter-rouge">insert</code> function uses the function <code class="language-plaintext highlighter-rouge">build</code>, which is a constructor that makes sure the node is balanced.</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">insert</span> <span class="o">::</span> <span class="kt">Ord</span> <span class="n">a</span> <span class="o">=&gt;</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">Tree</span> <span class="n">a</span>
+<span class="n">insert</span> <span class="n">x</span> <span class="n">s</span> <span class="o">=</span> <span class="kr">let</span> <span class="kt">T</span> <span class="kr">_</span> <span class="n">a</span> <span class="n">y</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ins</span> <span class="n">s</span>
+             <span class="kr">in</span>  <span class="kt">T</span> <span class="kt">B</span> <span class="n">a</span> <span class="n">y</span> <span class="n">b</span>
+        <span class="kr">where</span>
+          <span class="n">ins</span> <span class="n">s'</span><span class="o">@</span><span class="p">(</span><span class="kt">T</span> <span class="n">color</span> <span class="n">a'</span> <span class="n">y'</span> <span class="n">b'</span><span class="p">)</span>
+                    <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">y'</span>    <span class="o">=</span> <span class="n">build</span> <span class="n">color</span> <span class="p">(</span><span class="n">ins</span> <span class="n">a'</span><span class="p">)</span> <span class="n">y'</span> <span class="n">b'</span>
+                    <span class="o">|</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">y'</span>    <span class="o">=</span> <span class="n">build</span> <span class="n">color</span> <span class="n">a'</span> <span class="n">y'</span> <span class="p">(</span><span class="n">ins</span> <span class="n">b'</span><span class="p">)</span>
+                    <span class="o">|</span> <span class="n">otherwise</span> <span class="o">=</span> <span class="n">s'</span>
+          <span class="n">ins</span> <span class="kt">Empty</span>             <span class="o">=</span> <span class="kt">T</span> <span class="kt">R</span> <span class="kt">Empty</span> <span class="n">x</span> <span class="kt">Empty</span>
+</code></pre></div></div>
+
+<p>There are four cases when <code class="language-plaintext highlighter-rouge">build</code> needs to adjust a node. It detects the case when a black parent has a red child with a red child. It shifts the nodes around to fix it. The solution is the same in every case. (Notice the right hand sides of <code class="language-plaintext highlighter-rouge">build</code> are the same).</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">build</span> <span class="o">::</span> <span class="kt">Color</span> <span class="o">-&gt;</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">Tree</span> <span class="n">a</span>
+<span class="n">build</span> <span class="kt">B</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="n">a</span> <span class="n">x</span> <span class="n">b</span><span class="p">)</span> <span class="n">y</span> <span class="n">c</span><span class="p">)</span> <span class="n">z</span> <span class="n">d</span> <span class="o">=</span> <span class="kt">T</span> <span class="kt">R</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">a</span> <span class="n">x</span> <span class="n">b</span><span class="p">)</span> <span class="n">y</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">c</span> <span class="n">z</span> <span class="n">d</span><span class="p">)</span>
+<span class="n">build</span> <span class="kt">B</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="n">a</span> <span class="n">x</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="n">b</span> <span class="n">y</span> <span class="n">c</span><span class="p">))</span> <span class="n">z</span> <span class="n">d</span> <span class="o">=</span> <span class="kt">T</span> <span class="kt">R</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">a</span> <span class="n">x</span> <span class="n">b</span><span class="p">)</span> <span class="n">y</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">c</span> <span class="n">z</span> <span class="n">d</span><span class="p">)</span>
+<span class="n">build</span> <span class="kt">B</span> <span class="n">a</span> <span class="n">x</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="n">b</span> <span class="n">y</span> <span class="n">c</span><span class="p">)</span> <span class="n">z</span> <span class="n">d</span><span class="p">)</span> <span class="o">=</span> <span class="kt">T</span> <span class="kt">R</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">a</span> <span class="n">x</span> <span class="n">b</span><span class="p">)</span> <span class="n">y</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">c</span> <span class="n">z</span> <span class="n">d</span><span class="p">)</span>
+<span class="n">build</span> <span class="kt">B</span> <span class="n">a</span> <span class="n">x</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="n">b</span> <span class="n">y</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="n">c</span> <span class="n">z</span> <span class="n">d</span><span class="p">))</span> <span class="o">=</span> <span class="kt">T</span> <span class="kt">R</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">a</span> <span class="n">x</span> <span class="n">b</span><span class="p">)</span> <span class="n">y</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">c</span> <span class="n">z</span> <span class="n">d</span><span class="p">)</span>
+<span class="n">build</span> <span class="n">color</span> <span class="n">left</span> <span class="n">x</span> <span class="n">right</span>          <span class="o">=</span> <span class="kt">T</span> <span class="n">color</span> <span class="n">left</span> <span class="n">x</span> <span class="n">right</span>
+</code></pre></div></div>
+
+<p><img src="/images/redblacktree/balance.jpg" style="width: 100%" /></p>
+
+<h3 id="afterwards">Afterwards</h3>
+
+<p>That’s it. You have a Red-Black tree.</p>
+
+<p>If you want to learn more, read <a href="http://amzn.to/1Kdg2iD"><em>Purely Functional Data Structures</em></a> by Chris Okasaki. I stole most of my implementation from this book. The <code class="language-plaintext highlighter-rouge">build</code> diagram is also from the book.</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">module</span> <span class="nn">RedBlackSet</span><span class="p">(</span> <span class="n">empty</span>
+                  <span class="p">,</span> <span class="n">member</span>
+                  <span class="p">,</span> <span class="n">insert</span>
+                  <span class="p">)</span> <span class="kr">where</span>
+
+<span class="kr">data</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="o">=</span> <span class="kt">Empty</span>
+            <span class="o">|</span> <span class="kt">T</span> <span class="kt">Color</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="n">a</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span>
+
+<span class="kr">data</span> <span class="kt">Color</span>  <span class="o">=</span> <span class="kt">R</span>
+            <span class="o">|</span> <span class="kt">B</span>
+
+<span class="n">empty</span> <span class="o">::</span> <span class="kt">Ord</span> <span class="n">a</span> <span class="o">=&gt;</span> <span class="kt">Tree</span> <span class="n">a</span>
+<span class="n">empty</span> <span class="o">=</span> <span class="kt">Empty</span>
+
+<span class="n">member</span> <span class="o">::</span> <span class="kt">Ord</span> <span class="n">a</span> <span class="o">=&gt;</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">Bool</span>
+<span class="n">member</span> <span class="p">(</span><span class="kt">T</span> <span class="kr">_</span> <span class="n">left</span> <span class="n">e</span> <span class="n">right</span><span class="p">)</span> <span class="n">x</span> <span class="o">|</span> <span class="n">x</span> <span class="o">==</span> <span class="n">e</span> <span class="o">=</span> <span class="kt">True</span>
+                            <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">e</span>  <span class="o">=</span> <span class="n">member</span> <span class="n">left</span> <span class="n">x</span>
+                            <span class="o">|</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">e</span>  <span class="o">=</span> <span class="n">member</span> <span class="n">right</span> <span class="n">x</span>
+<span class="n">member</span> <span class="kt">Empty</span> <span class="kr">_</span>                       <span class="o">=</span> <span class="kt">False</span>
+
+<span class="n">insert</span> <span class="o">::</span> <span class="kt">Ord</span> <span class="n">a</span> <span class="o">=&gt;</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">Tree</span> <span class="n">a</span>
+<span class="n">insert</span> <span class="n">x</span> <span class="n">s</span> <span class="o">=</span> <span class="kr">let</span> <span class="kt">T</span> <span class="kr">_</span> <span class="n">a</span> <span class="n">y</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ins</span> <span class="n">s</span>
+             <span class="kr">in</span>  <span class="kt">T</span> <span class="kt">B</span> <span class="n">a</span> <span class="n">y</span> <span class="n">b</span>
+        <span class="kr">where</span>
+          <span class="n">ins</span> <span class="n">s'</span><span class="o">@</span><span class="p">(</span><span class="kt">T</span> <span class="n">color</span> <span class="n">a'</span> <span class="n">y'</span> <span class="n">b'</span><span class="p">)</span>
+                    <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">y'</span>    <span class="o">=</span> <span class="n">build</span> <span class="n">color</span> <span class="p">(</span><span class="n">ins</span> <span class="n">a'</span><span class="p">)</span> <span class="n">y'</span> <span class="n">b'</span>
+                    <span class="o">|</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">y'</span>    <span class="o">=</span> <span class="n">build</span> <span class="n">color</span> <span class="n">a'</span> <span class="n">y'</span> <span class="p">(</span><span class="n">ins</span> <span class="n">b'</span><span class="p">)</span>
+                    <span class="o">|</span> <span class="n">otherwise</span> <span class="o">=</span> <span class="n">s'</span>
+          <span class="n">ins</span> <span class="kt">Empty</span>             <span class="o">=</span> <span class="kt">T</span> <span class="kt">R</span> <span class="kt">Empty</span> <span class="n">x</span> <span class="kt">Empty</span>
+
+<span class="n">build</span> <span class="o">::</span> <span class="kt">Color</span> <span class="o">-&gt;</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">Tree</span> <span class="n">a</span>
+<span class="n">build</span> <span class="kt">B</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="n">a</span> <span class="n">x</span> <span class="n">b</span><span class="p">)</span> <span class="n">y</span> <span class="n">c</span><span class="p">)</span> <span class="n">z</span> <span class="n">d</span> <span class="o">=</span> <span class="kt">T</span> <span class="kt">R</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">a</span> <span class="n">x</span> <span class="n">b</span><span class="p">)</span> <span class="n">y</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">c</span> <span class="n">z</span> <span class="n">d</span><span class="p">)</span>
+<span class="n">build</span> <span class="kt">B</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="n">a</span> <span class="n">x</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="n">b</span> <span class="n">y</span> <span class="n">c</span><span class="p">))</span> <span class="n">z</span> <span class="n">d</span> <span class="o">=</span> <span class="kt">T</span> <span class="kt">R</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">a</span> <span class="n">x</span> <span class="n">b</span><span class="p">)</span> <span class="n">y</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">c</span> <span class="n">z</span> <span class="n">d</span><span class="p">)</span>
+<span class="n">build</span> <span class="kt">B</span> <span class="n">a</span> <span class="n">x</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="n">b</span> <span class="n">y</span> <span class="n">c</span><span class="p">)</span> <span class="n">z</span> <span class="n">d</span><span class="p">)</span> <span class="o">=</span> <span class="kt">T</span> <span class="kt">R</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">a</span> <span class="n">x</span> <span class="n">b</span><span class="p">)</span> <span class="n">y</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">c</span> <span class="n">z</span> <span class="n">d</span><span class="p">)</span>
+<span class="n">build</span> <span class="kt">B</span> <span class="n">a</span> <span class="n">x</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="n">b</span> <span class="n">y</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">R</span> <span class="n">c</span> <span class="n">z</span> <span class="n">d</span><span class="p">))</span> <span class="o">=</span> <span class="kt">T</span> <span class="kt">R</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">a</span> <span class="n">x</span> <span class="n">b</span><span class="p">)</span> <span class="n">y</span> <span class="p">(</span><span class="kt">T</span> <span class="kt">B</span> <span class="n">c</span> <span class="n">z</span> <span class="n">d</span><span class="p">)</span>
+<span class="n">build</span> <span class="n">color</span> <span class="n">left</span> <span class="n">x</span> <span class="n">right</span>          <span class="o">=</span> <span class="kt">T</span> <span class="n">color</span> <span class="n">left</span> <span class="n">x</span> <span class="n">right</span>
+</code></pre></div></div>

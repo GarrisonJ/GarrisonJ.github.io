@@ -1,0 +1,96 @@
+<p>I can’t help but notice when I still need human generated content. Another example I found is when studying new topics I find human generated content helpful because I don’t know what I need to know.</p>
+
+<p>I wanted to learn more about system design for job interviews, so I purchased “Grokking the System Design Interview”. Asking ChatGPT to write this content is technically possible, but the prompt would need to be written by an expert for it to generate what I need. I don’t know what I don’t know. But here is an example of how I used the book+ChatGPT to deepen my understanding.</p>
+
+<p>The book gives high level estimations similar to how you would in a job interview. That’s the exact level I want for most of the content, but sometimes I want to delve deeper:</p>
+
+<p>I’ve never built a production real-time system. So I don’t have any intuitions about what resources I would need for keeping thousands of WebSockets open. I picked the chapter “Designing Facebook Messenger” as a good starting point for me to learn. I made it to this paragraph and wanted to knwo more:</p>
+
+<blockquote>
+    <p>**How many chat servers do we need?** Let's plan for 500 million connections at any time. Assuming a modern server can handle 50K concurrent connections at any time, we would need 10K such servers.</p>
+  <footer>Grokking the System Design Interview, Designing Facebook Messenger</footer>
+</blockquote>
+
+<p>That’s probably an okay answer for an interview. But I can’t just memorize that a modern server can handle 50K connections at a time. I want to have an intuition. So I in my <a href="https://chat.openai.com/share/21fb3c29-3929-4028-9608-e9a10b3ccdef">ChatGPT</a> window I asked (ChatGPT already has context because I’ve been asking about sockets): “So if I needed to handle 500 million connections at any time, I could roughly assume a modern server could handle 50K at a time and I would need 10K servers?”</p>
+
+<p>ChatGPT’s response:</p>
+
+<blockquote>
+  <p>Your general line of thinking is on the right track, but there are some nuances to consider. Let’s dive a bit deeper:</p>
+</blockquote>
+
+<blockquote>
+  <ol>
+    <li><strong>Connection Capacity Per Server:</strong>
+      <ul>
+        <li>The assumption that a modern server can handle 50K connections at a time might be conservative. With the right setup (e.g., using event-driven architectures), it’s possible for a server to handle hundreds of thousands or even over a million concurrent connections. However, this doesn’t necessarily mean it can handle high throughput on all those connections at the same time — there’s a difference between a connection being open and being active.</li>
+      </ul>
+    </li>
+  </ol>
+</blockquote>
+
+<blockquote>
+  <ol>
+    <li><strong>Overhead Considerations:</strong>
+      <ul>
+        <li>While you might be able to handle many connections, the overhead (in terms of memory, CPU, and other resources) would scale up. For example, even if the memory overhead per connection was just 100KB, 1 million connections would require around 100GB of memory just for connection management.</li>
+      </ul>
+    </li>
+  </ol>
+</blockquote>
+
+<blockquote>
+  <ol>
+    <li><strong>Redundancy and Failover:</strong>
+      <ul>
+        <li>It’s unwise to operate without redundancy. So even if your raw calculations suggest you need 10K servers, in reality, you might want more to handle potential server failures, maintenance downtime, or other unforeseen issues.</li>
+      </ul>
+    </li>
+  </ol>
+</blockquote>
+
+<blockquote>
+  <ol>
+    <li><strong>Load Balancing:</strong>
+      <ul>
+        <li>Managing 10K servers and efficiently distributing 500 million connections among them is non-trivial. You would need sophisticated load balancing mechanisms, potentially at multiple levels (DNS load balancing, regional load balancers, etc.).</li>
+      </ul>
+    </li>
+  </ol>
+</blockquote>
+
+<blockquote>
+  <ol>
+    <li><strong>Hotspots and Uneven Load:</strong>
+      <ul>
+        <li>Not all connections are equal. Some might be more active than others. Some servers might have hotspots due to specific users or groups of users generating more traffic. This uneven distribution might mean that while one server is overwhelmed, another might be underutilized.</li>
+      </ul>
+    </li>
+  </ol>
+</blockquote>
+
+<blockquote>
+  <ol>
+    <li><strong>Infrastructure and Operational Challenges:</strong>
+      <ul>
+        <li>Operating 10K servers means dealing with hardware failures, network issues, deployments, updates, and many other operational challenges at a significant scale.</li>
+      </ul>
+    </li>
+  </ol>
+</blockquote>
+
+<blockquote>
+  <ol>
+    <li><strong>Cost:</strong>
+      <ul>
+        <li>The cost wouldn’t just be in server hardware or cloud instances. You’d also need to account for bandwidth, storage, operational personnel, and other associated costs.</li>
+      </ul>
+    </li>
+  </ol>
+</blockquote>
+
+<blockquote>
+  <p>So while the basic math of dividing 500 million by 50K to get 10K servers provides a starting point, the real-world scenario is more complex. You’d likely need to consider a combination of vertical scaling (more powerful servers) and horizontal scaling (more servers), along with sophisticated infrastructure management tools and practices. Always run real-world tests and simulations to get a clearer picture of what you’d need.</p>
+</blockquote>
+
+<p>I could give more examples, but that gives a good idea of my general study process nowadays. Over time my prompts skills might improve and I would I will require less and less human generated content.</p>

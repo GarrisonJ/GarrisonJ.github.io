@@ -1,80 +1,74 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title> Garrison Jensen - A fast way to generate primes in Haskell</title>
-	<link rel="stylesheet" href="../css/tufte.css" />
-	<link rel="stylesheet" href="../css/default.css" />
-    </head>
-    <body>
-        <header>
-            <div class="logo">
-                <a href="../">garrison</a>
-            </div>
-        </header>
-	    <article>
-		    <h1>A fast way to generate primes in Haskell</h1>
-		    <p class="subtitle">
-Posted on May 13, 2015
+<p>On the front page of <a href="https://www.haskell.org/">Haskell.org</a>, you will see this implementation of the sieve of Eratosthenes:</p>
 
-</p>
-<section>
-	<p>On the front page of <a href="https://www.haskell.org/">Haskell.org</a>, you will see this implementation of the sieve of Eratosthenes:</p>
 <div style="text-align:center;">
-<p><img style="width: 100%;" src="../images/Screen.png"></p>
+<img style="width: 100%;" src="/images/Screen.png" /> 
 </div>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>primes <span class="ot">=</span> sieve [<span class="dv">2</span><span class="op">..</span>] </span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> sieve (p<span class="op">:</span>xs) <span class="ot">=</span> </span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>          p <span class="op">:</span> sieve [x <span class="op">|</span> x <span class="ot">&lt;-</span> xs, x <span class="ot">`mod`</span> p <span class="op">/=</span> <span class="dv">0</span>]</span></code></pre></div>
-<p>When you see this for the first time it’s amazing. But it’s <a href="http://www.cs.hmc.edu/~oneill/papers/Sieve-JFP.pdf">not the sieve of Eratosthenes</a>.</p>
-<p>The problem with the algorithm is the way it crosses-off numbers. In the true sieve of Eratosthenes when we find a prime number, <span class="math display"><em>p</em></span>, we start at <span class="math display"><em>p</em><sup>2</sup></span> and from there we cross-off multiples of <span class="math display"><em>p</em></span>. For example, when calculating prime numbers less then 100, when we find 7 we start at 49 and cross-off 56, 63, 70, 77, 84, 91, and 98. That’s 8 operations. When the false algorithm finds 7, it checks every number from 8 to 100, that’s 92 operations!</p>
-<div style="text-align:center">
-<p><img src="../images/Sieve_of_Eratosthenes_animation.gif" alt="real seive animation, courtesy of Wikipedia"></p>
-</div>
-<p><a href="http://www.cs.hmc.edu/~oneill/">Melissa E. O’Neill</a> gives us a real functional, <a href="https://wiki.haskell.org/Lazy_evaluation">lazy</a>, implementation of the algorithm in her paper, <a href="http://www.cs.hmc.edu/~oneill/papers/Sieve-JFP.pdf"><strong><em>The Genuine Sieve of Eratosthenes</em></strong></a>.</p>
-<p>For every number, we check if it’s a multiple of a prime seen so far. We don’t have to check all the primes. We store the primes in a priority queue, indexed on the smallest multiple of it we have seen. We only compare the current number to the smallest index of the queue. If it equals our current number, we know our number must be a composite. We then increment the prime multiple to the next multiple of the prime, and insert it back into the queue. (We also have to adjust the queue because some numbers are inserted more than once. 12 will be in the queue twice because <span class="math display">2<sup>2</sup> + 2 + 2 + 2 + 2 = 12</span> and <span class="math display">3<sup>2</sup> + 3 = 12</span>. Notice 12 is also crossed-off twice in the animation.)</p>
-<p>We store multiples of primes as infinite lists. Laziness is key.</p>
-<p>My interpretation of the algorithm uses <a href="https://downloads.haskell.org/~ghc/7.8.2/docs/html/libraries/containers-0.5.5.1/Data-Set.html">Data.Set</a> as a priority queue, because the functions <code>insert</code> and <code>findMin</code> are <span class="math display"><em>O</em>(<em>l</em><em>o</em><em>g</em>(<em>n</em>))</span>.</p>
-<hr />
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Set</span> <span class="kw">as</span> <span class="dt">PQ</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ot">primes ::</span> [<span class="dt">Integer</span>]</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>primes <span class="ot">=</span> <span class="dv">2</span><span class="op">:</span>sieve [<span class="dv">3</span>,<span class="dv">5</span><span class="op">..</span>]</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    sieve (x<span class="op">:</span>xs) <span class="ot">=</span> x <span class="op">:</span> sieve' xs (insertprime x xs PQ.empty)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    sieve' (x<span class="op">:</span>xs) table</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> nextComposite <span class="op">==</span> x <span class="ot">=</span> sieve' xs (adjust x table)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> <span class="fu">otherwise</span>          <span class="ot">=</span> x <span class="op">:</span> sieve' xs (insertprime x xs table)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>      <span class="kw">where</span> </span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        (nextComposite,_) <span class="ot">=</span> PQ.findMin table</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    adjust x table</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> n <span class="op">==</span> x    <span class="ot">=</span> adjust x (PQ.insert (n', ns) newPQ)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> table</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>      <span class="kw">where</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Just</span> ((n, n'<span class="op">:</span>ns), newPQ) <span class="ot">=</span> PQ.minView table</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    insertprime p xs <span class="ot">=</span> PQ.insert (p<span class="op">*</span>p, <span class="fu">map</span> (<span class="op">*</span>p) xs)</span></code></pre></div>
-<hr />
-<p>The difference in time it takes each algorithm to calculate the 10,000th prime number on my machine is huge:</p>
-<p><strong>False sieve:</strong></p>
-<pre><code>    real  0m7.913s
-    user  0m7.886s
-    sys   0m0.016s</code></pre>
-<p><strong>O’Neill’s algorithm:</strong></p>
-<pre><code>    real  0m0.248s
-    user  0m0.241s
-    sys   0m0.004s</code></pre>
-<p>The false sieve takes almost <strong>8 seconds</strong>! Compare this to the real sieve which takes about <strong>0.24 seconds</strong>.</p>
-<hr />
-<p><a href="http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes">Sieve gif courtesy of Wikipedia.</a></p>
-</section>
 
-	    </article>
-        <footer>
-        </footer>
-    </body>
-</html>
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">primes</span> <span class="o">=</span> <span class="n">sieve</span> <span class="p">[</span><span class="mi">2</span><span class="o">..</span><span class="p">]</span> 
+  <span class="kr">where</span> <span class="n">sieve</span> <span class="p">(</span><span class="n">p</span><span class="o">:</span><span class="n">xs</span><span class="p">)</span> <span class="o">=</span> 
+          <span class="n">p</span> <span class="o">:</span> <span class="n">sieve</span> <span class="p">[</span><span class="n">x</span> <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;-</span> <span class="n">xs</span><span class="p">,</span> <span class="n">x</span> <span class="p">`</span><span class="n">mod</span><span class="p">`</span> <span class="n">p</span> <span class="o">/=</span> <span class="mi">0</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>When you see this for the first time it’s amazing. But it’s <a href="http://www.cs.hmc.edu/~oneill/papers/Sieve-JFP.pdf">not the sieve of Eratosthenes</a>.</p>
+
+<p>The problem with the algorithm is the way it crosses-off numbers. In the true sieve of Eratosthenes when we find a prime number, \(p\), we start at \(p^2\) and from there we cross-off multiples of \(p\). For example, when calculating prime numbers less then 100, when we find 7 we start at 49 and cross-off 56, 63, 70, 77, 84, 91, and 98. That’s 8 operations. When the false algorithm finds 7, it checks every number from 8 to 100, that’s 92 operations!</p>
+
+<div style="text-align:center">
+<img src="/images/Sieve_of_Eratosthenes_animation.gif" alt="real seive animation, courtesy of Wikipedia" />
+</div>
+
+<p><a href="http://www.cs.hmc.edu/~oneill/">Melissa E. O’Neill</a> gives us a real functional, <a href="https://wiki.haskell.org/Lazy_evaluation">lazy</a>, implementation of the algorithm in her paper, <a href="http://www.cs.hmc.edu/~oneill/papers/Sieve-JFP.pdf"><strong><em>The Genuine Sieve of Eratosthenes</em></strong></a>.</p>
+
+<p>For every number, we check if it’s a multiple of a prime seen so far. We don’t have to check all the primes. We store the primes in a priority queue, indexed on the smallest multiple of it we have seen. We only compare the current number to the smallest index of the queue. If it equals our current number, we know our number must be a composite. We then increment the prime multiple to the next multiple of the prime, and insert it back into the queue. (We also have to adjust the queue because some numbers are inserted more than once. 12 will be in the queue twice because \(2^2+2+2+2+2=12\) and \(3^2+3=12\). Notice 12 is also crossed-off twice in the animation.)</p>
+
+<p>We store multiples of primes as infinite lists. Laziness is key.</p>
+
+<p>My interpretation of the algorithm uses <a href="https://downloads.haskell.org/~ghc/7.8.2/docs/html/libraries/containers-0.5.5.1/Data-Set.html">Data.Set</a> as a priority queue, because the functions <code class="language-plaintext highlighter-rouge">insert</code> and <code class="language-plaintext highlighter-rouge">findMin</code> are \(O(log(n))\).</p>
+
+<hr />
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">import</span> <span class="k">qualified</span> <span class="nn">Data.Set</span> <span class="k">as</span> <span class="n">PQ</span>
+
+<span class="n">primes</span> <span class="o">::</span> <span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="n">primes</span> <span class="o">=</span> <span class="mi">2</span><span class="o">:</span><span class="n">sieve</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="o">..</span><span class="p">]</span>
+  <span class="kr">where</span>
+    <span class="n">sieve</span> <span class="p">(</span><span class="n">x</span><span class="o">:</span><span class="n">xs</span><span class="p">)</span> <span class="o">=</span> <span class="n">x</span> <span class="o">:</span> <span class="n">sieve'</span> <span class="n">xs</span> <span class="p">(</span><span class="n">insertprime</span> <span class="n">x</span> <span class="n">xs</span> <span class="kt">PQ</span><span class="o">.</span><span class="n">empty</span><span class="p">)</span>
+
+    <span class="n">sieve'</span> <span class="p">(</span><span class="n">x</span><span class="o">:</span><span class="n">xs</span><span class="p">)</span> <span class="n">table</span>
+        <span class="o">|</span> <span class="n">nextComposite</span> <span class="o">==</span> <span class="n">x</span> <span class="o">=</span> <span class="n">sieve'</span> <span class="n">xs</span> <span class="p">(</span><span class="n">adjust</span> <span class="n">x</span> <span class="n">table</span><span class="p">)</span>
+        <span class="o">|</span> <span class="n">otherwise</span>          <span class="o">=</span> <span class="n">x</span> <span class="o">:</span> <span class="n">sieve'</span> <span class="n">xs</span> <span class="p">(</span><span class="n">insertprime</span> <span class="n">x</span> <span class="n">xs</span> <span class="n">table</span><span class="p">)</span>
+      <span class="kr">where</span> 
+        <span class="p">(</span><span class="n">nextComposite</span><span class="p">,</span><span class="kr">_</span><span class="p">)</span> <span class="o">=</span> <span class="kt">PQ</span><span class="o">.</span><span class="n">findMin</span> <span class="n">table</span>
+
+    <span class="n">adjust</span> <span class="n">x</span> <span class="n">table</span>
+        <span class="o">|</span> <span class="n">n</span> <span class="o">==</span> <span class="n">x</span>    <span class="o">=</span> <span class="n">adjust</span> <span class="n">x</span> <span class="p">(</span><span class="kt">PQ</span><span class="o">.</span><span class="n">insert</span> <span class="p">(</span><span class="n">n'</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span> <span class="n">newPQ</span><span class="p">)</span>
+        <span class="o">|</span> <span class="n">otherwise</span> <span class="o">=</span> <span class="n">table</span>
+      <span class="kr">where</span>
+        <span class="kt">Just</span> <span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n'</span><span class="o">:</span><span class="n">ns</span><span class="p">),</span> <span class="n">newPQ</span><span class="p">)</span> <span class="o">=</span> <span class="kt">PQ</span><span class="o">.</span><span class="n">minView</span> <span class="n">table</span>
+
+    <span class="n">insertprime</span> <span class="n">p</span> <span class="n">xs</span> <span class="o">=</span> <span class="kt">PQ</span><span class="o">.</span><span class="n">insert</span> <span class="p">(</span><span class="n">p</span><span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="n">map</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">)</span> <span class="n">xs</span><span class="p">)</span>
+</code></pre></div></div>
+<hr />
+
+<p>The difference in time it takes each algorithm to calculate the 10,000th prime number on my machine is huge:</p>
+
+<p><strong>False sieve:</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    real  0m7.913s
+    user  0m7.886s
+    sys   0m0.016s
+</code></pre></div></div>
+
+<p><strong>O’Neill’s algorithm:</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    real  0m0.248s
+    user  0m0.241s
+    sys   0m0.004s
+</code></pre></div></div>
+
+<p>The false sieve takes almost <strong>8 seconds</strong>! Compare this to the real sieve which takes about <strong>0.24 seconds</strong>.</p>
+
+<hr />
+
+<p><a href="http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes">Sieve gif courtesy of  Wikipedia.</a></p>
+
